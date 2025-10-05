@@ -1,3 +1,38 @@
+// Giphy API key and endpoint
+const API_KEY = "YOUR_API_KEY"; // Replace with your Giphy API key
+const BASE_URL = "https://api.giphy.com/v1/gifs/search";
+
+// a. Get DOM elements
+const gifContainer = document.querySelector('#gif-container');
+const fetchButton = document.querySelector('#fetch-gif-btn');
+const searchInput = document.querySelector('#search-input'); // ✅ Fetch the input field
+
+// b. Add event listener
+fetchButton.addEventListener('click', async () => {
+  const query = searchInput.value.trim(); // ✅ Get search term
+  if (!query) return;
+
+  // Clear previous gifs
+  gifContainer.innerHTML = '';
+
+  try {
+    // ✅ Use string interpolation to insert query in URL
+    const response = await fetch(`${BASE_URL}?api_key=${API_KEY}&q=${encodeURIComponent(query)}&limit=9`);
+    const data = await response.json();
+
+    const gifs = data.data;
+
+    // ✅ Render each gif
+    for (let gif of gifs) {
+      gifContainer.innerHTML += `
+        <img src="${gif.images.fixed_width.url}" class="col-3 mb-3" />
+      `;
+    }
+  } catch (error) {
+    console.error('Error fetching GIFs:', error);
+    gifContainer.innerHTML = `<p class="text-danger">Failed to load GIFs. Try again later.</p>`;
+  }
+});
 console.log("script.js loaded");
 {
   "data": [

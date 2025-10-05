@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Assignment #9: Giphy API</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <title> Giphy API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet" />
   </head>
   <body>
     <div class="container my-5">
       <h1 class="mb-4 text-center">Fetch a Gif</h1>
 
-      <!-- Optional Search Bar -->
+      <!-- Search Bar -->
       <div class="row justify-content-center mb-3">
         <div class="col-md-6">
           <input type="text" id="search-input" class="form-control" placeholder="Search for a GIF">
         </div>
       </div>
 
-      <!-- ✅ ENABLED: Fetch Button -->
+      <!-- Fetch Button -->
       <div class="d-flex justify-content-center mb-4">
         <button id="fetch-gif-btn" class="btn btn-primary">
           Fetch a GIF
@@ -29,6 +29,51 @@
       <div id="gif-container" class="row"></div>
     </div>
 
-    <script src="./js/script.js"></script>
+    <!-- JavaScript Section -->
+    <script>
+      const API_KEY = 'mcExLTpKYoFP6zKYI4RJ4v8oJXcSlP2u';
+      const fetchBtn = document.getElementById('fetch-gif-btn');
+      const searchInput = document.getElementById('search-input');
+      const gifContainer = document.getElementById('gif-container');
+
+      fetchBtn.addEventListener('click', async () => {
+        const query = searchInput.value.trim();
+        if (!query) {
+          alert('Please enter a search term!');
+          return;
+        }
+
+        try {
+          const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${encodeURIComponent(query)}&limit=12&rating=g`);
+          const data = await response.json();
+          displayGifs(data.data);
+        } catch (error) {
+          console.error('Error fetching GIFs:', error);
+        }
+      });
+
+      function displayGifs(gifs) {
+        gifContainer.innerHTML = ''; // Clear previous GIFs
+
+        if (gifs.length === 0) {
+          gifContainer.innerHTML = '<p class="text-center">No GIFs found.</p>';
+          return;
+        }
+
+        gifs.forEach(gif => {
+          const gifCol = document.createElement('div');
+          gifCol.classList.add('col-md-3', 'mb-4');
+
+          const gifImg = document.createElement('img');
+          gifImg.src = gif.images.fixed_height.url;
+          gifImg.alt = gif.title;
+          gifImg.classList.add('img-fluid', 'rounded');
+
+          gifCol.appendChild(gifImg);
+          gifContainer.appendChild(gifCol);
+        });
+      }
+    </script>
   </body>
 </html>
+
